@@ -1,5 +1,3 @@
-
-
 # Data Warehouse — Medallion Architecture
 
 A layered ETL pipeline built on Bronze → Silver → Gold architecture, transforming raw CRM & ERP source data into analytics-ready star schema views.
@@ -28,7 +26,7 @@ A layered ETL pipeline built on Bronze → Silver → Gold architecture, transfo
 
 ## Silver Layer — Cleansed & Structured
 
-- Transformed Bronze data into clean, structured fact and dimension tables forming a **star schema** — `crm_sales_details` as the fact table, with customer, product, and ERP dimensions.
+- Transformed Bronze data into clean, structured tables — including `crm_sales_details`, customer, product, and ERP tables — ready for Gold layer modeling.
 - Applied transformations: deduplication via `ROW_NUMBER()`, whitespace removal with `TRIM()`, and value standardization via `CASE`.
 - Handled NULLs, invalid data, and applied business rules — including recalculated sales figures and date validation.
 - Added audit column `dwh_create_date` to all tables for data load tracking.
@@ -52,7 +50,10 @@ A layered ETL pipeline built on Bronze → Silver → Gold architecture, transfo
 
 ## Gold Layer — Analytics-Ready Views
 
-- Created dimension and fact views forming a final star schema — customer and product dimensions integrated from multiple sources, connected via a central sales fact view.
+- Created dimension and fact **views** forming a final star schema — `dim_customers` and `dim_products` as dimensions, connected via `fact_sales`.
+- Integrated data from multiple Silver tables into unified dimensions (e.g., customer data merged from CRM & ERP sources, with CRM as the primary source for gender).
+- Filtered out historical product records — only current products included (`prd_end_dt IS NULL`).
+- Surrogate keys generated using `ROW_NUMBER()` for each dimension.
 - Provides clean, business-ready data optimized for analytics and reporting with no downstream transformations required.
 
 ### Gold Quality Checks
@@ -68,3 +69,7 @@ A layered ETL pipeline built on Bronze → Silver → Gold architecture, transfo
 | Layers | Quality Checks | Schema |
 |---|---|---|
 | 3 (Bronze / Silver / Gold) | 10 total | Star Schema |
+
+---
+
+*Project inspired by [Data with Baraa](https://www.youtube.com/@DataWithBaraa)*

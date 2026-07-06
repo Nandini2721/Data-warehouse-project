@@ -68,7 +68,7 @@ BEGIN
 			FROM bronze.crm_cust_info
 			WHERE cst_id IS NOT NULL
 		) t
-		WHERE flag_last = 1; -- Select the most recent record per customer
+		WHERE flag_last = 1; -- Select the most recent record per customer (Why this matters: if a customer appears multiple times in Bronze (updated info re-submitted, system re-sync, etc.), you only want their latest, most accurate record in Silver)
 		SET @end_time = GETDATE();
         PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
         PRINT '>> -------------';
